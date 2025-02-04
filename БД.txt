@@ -1,0 +1,1 @@
+create table students(student_id serial primary key, student_name text not null, student_surname text not null, student_patronymic text, class_number integer not null, class_letter text not null)
