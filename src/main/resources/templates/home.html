@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+    <form method="post" action="/logout">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <button type="submit">Logout</button>
+    </form>
+</head>
+<body>
+
+</body>
+</html>

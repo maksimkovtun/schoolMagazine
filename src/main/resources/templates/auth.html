@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Students</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Авторизация</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Авторизация</h1>
+<div class="authContainer">
+    <h2>Вход в систему</h2>
+    <div th:if="${loginError}" class="error">
+        <p th:text="${loginError}"></p>
+    </div>
+    <form id="authForm" method="post" action="/login">
+        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+        <input type="text" name="username" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Войти</button>
+        <p>Еще не зарегистрированы? <a href="/register">Зарегистрироваться</a></p>
+    </form>
+</div>
 </body>
 </html>
