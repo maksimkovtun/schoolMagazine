@@ -6,10 +6,14 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
     <form method="post" action="/logout">
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-        <button type="submit">Logout</button>
+        <button type="submit">Выйти</button>
     </form>
 </head>
 <body>
-
+<div>
+    <th:block th:if="${#authentication != null and #authentication.authorities != null and #authentication.authorities.contains('ROLE_ADMIN')}">
+        <p>Вы администратор!</p>
+    </th:block>
+</div>
 </body>
 </html>

@@ -4,44 +4,62 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f4f4f4;
+    background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
 }
 
 .authContainer {
-    position: relative;
-    background: white;
-    padding: 20px;
-    margin: 10px auto;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 300px;
-}
-
-#authForm input,
-#authForm button {
-    display: block;
-    width: 80%;
-    margin: 10px auto;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    max-width: 400px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    width: 350px;
     text-align: center;
 }
 
-#authForm button {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-#authForm button:hover {
-    background-color: #4cae4c;
+.authContainer h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #000;
 }
 
 .error {
     color: red;
+    margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="password"],
+button {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    outline: none;
+}
+
+button {
+    background-color: #4F46E5;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #4338ca;
+}
+
+a {
+    color: #6B7280;
+    text-decoration: underline;
 }
 
 .close-btn {
@@ -53,12 +71,10 @@ body {
     text-decoration: none;
     color: black;
     cursor: pointer;
-
     padding: 2px 6px;
     border: 2px solid #ccc;
-    border-radius: 25%;
+    border-radius: 50%;
     background-color: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 }
 
@@ -66,7 +82,6 @@ body {
     color: white;
     background-color: red;
     border-color: red;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 h1 {

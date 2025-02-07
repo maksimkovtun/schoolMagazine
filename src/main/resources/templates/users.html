@@ -14,15 +14,15 @@
       <th>Номер</th>
       <th>Логин</th>
       <th>Пароль</th>
-      <th>Админ права</th>
+      <th>Права</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="user : ${users}">
       <td th:text="${user.userId}"></td>
       <td th:text="${user.username}"></td>
-      <td th:text="${user.password}"></td>
-      <td th:text="${user.adminRole ? 'Есть' : 'Нет'}"></td>
+      <td th:text="${user.password != null ? '******' : ''}"></td>
+      <td th:text="${user.userRole == 'ADMIN' ? 'Администратор' : 'Пользователь'}"></td>
     </tr>
     </tbody>
   </table>

@@ -23,8 +23,8 @@ public class UsersEntity implements UserDetails {
     @Column(name = "user_password", nullable = false)
     private String password;
 
-    @Column(name = "admin_role")
-    private Boolean adminRole;
+    @Column(name = "role", nullable = false)
+    private String userRole;
 
     public Integer getUserId() {
         return userId;
@@ -52,17 +52,17 @@ public class UsersEntity implements UserDetails {
         this.password = userPassword;
     }
 
-    public Boolean getAdminRole() {
-        return adminRole;
+    public String getUserRole() {
+        return userRole;
     }
 
-    public void setAdminRole(Boolean adminRole) {
-        this.adminRole = adminRole;
+    public void setUserRole(String userRole) {
+        this.userRole = userRole;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.singletonList(() -> userRole);
     }
 
     @Override
@@ -93,20 +93,20 @@ public class UsersEntity implements UserDetails {
         return Objects.equals(userId, that.userId) &&
                 Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&
-                Objects.equals(adminRole, that.adminRole);
+                Objects.equals(userRole, that.userRole);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, password, adminRole);
+        return Objects.hash(userId, username, password, userRole);
     }
 
     public UsersEntity() {}
 
-    public UsersEntity(String userName, String password, Boolean adminRole) {
+    public UsersEntity(String userName, String password, String userRole) {
         this.username= userName;
         this.password = password;
-        this.adminRole = adminRole;
+        this.userRole = userRole;
     }
 
     @Override
@@ -115,7 +115,7 @@ public class UsersEntity implements UserDetails {
                 "userId=" + userId +
                 ", userName='" + username + '\'' +
                 ", userPassword='" + password + '\'' +
-                ", adminRole='" + adminRole + '\'' +
+                ", userRole='" + userRole + '\'' +
                 '}';
     }
 }

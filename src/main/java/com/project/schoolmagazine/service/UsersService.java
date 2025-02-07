@@ -3,6 +3,7 @@ package com.project.schoolmagazine.service;
 import com.project.schoolmagazine.entity.UsersEntity;
 import com.project.schoolmagazine.repository.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,7 +31,8 @@ public class UsersService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UsersEntity user = usersRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден: " + username));
-        return new User(user.getUsername(), user.getPassword(), Collections.emptyList());
+        return new User(user.getUsername(), user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getUserRole())));
     }
 
 
