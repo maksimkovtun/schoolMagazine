@@ -4,7 +4,7 @@
     <title>Авторизация</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
-<body>
+<body class="no-scroll-body">
 <div class="authContainer">
     <h2>Вход в систему</h2>
     <div th:if="${loginError}" class="error">
@@ -19,4 +19,5 @@
     </form>
 </div>
 </body>
+
 </html>

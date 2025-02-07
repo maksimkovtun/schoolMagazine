@@ -4,17 +4,27 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    padding-top: 60px;
+    background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
+}
+
+.no-scroll-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
     background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
 }
 
 .authContainer {
     max-width: 400px;
-    margin: 0 auto;
+    margin: auto;
     background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     padding: 1.5rem;
-    width: 350px;
     text-align: center;
 }
 
@@ -112,4 +122,46 @@ th {
 
 tr:hover {
     background-color: #f1f1f1;
+}
+
+.top-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #4CAF50;
+    display: flex;
+    align-items: center;
+    padding: 5px 15px;
+    height: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.top-bar .left-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.top-bar .right-button {
+    margin-left: auto;
+}
+
+.bar-button {
+    background-color: #fff;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.bar-button:hover {
+    background-color: #4CAF50;
+    color: white;
 }

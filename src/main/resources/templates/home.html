@@ -2,18 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Главная</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
-    <form method="post" action="/logout">
-        <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
-        <button type="submit">Выйти</button>
-    </form>
 </head>
 <body>
-<div>
-    <th:block th:if="${#authentication != null and #authentication.authorities != null and #authentication.authorities.contains('ROLE_ADMIN')}">
-        <p>Вы администратор!</p>
-    </th:block>
+<div class="top-bar">
+    <div class="left-buttons">
+        <button class="bar-button">Кнопка 1</button>
+        <button class="bar-button">Кнопка 2</button>
+        <button class="bar-button admin-button" th:if="${isAdmin}">Администрирование</button>
+    </div>
+    <div class="right-button">
+        <form method="post" action="/logout">
+            <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+            <button type="submit" class="bar-button">Выйти</button>
+        </form>
+    </div>
 </div>
+
 </body>
 </html>

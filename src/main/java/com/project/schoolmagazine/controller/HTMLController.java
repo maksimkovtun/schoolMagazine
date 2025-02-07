@@ -6,6 +6,7 @@ import com.project.schoolmagazine.service.StudentsService;
 import com.project.schoolmagazine.service.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,11 +34,13 @@ public class HTMLController {
         this.passwordEncoder = passwordEncoder;
         this.usersService = usersService;
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/students/view")
     public String viewStudents(Model model) {
         model.addAttribute("students", studentsService.getAllStudents().isEmpty() ? Collections.emptyList() : studentsService.getAllStudents());
         return "students";
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/admin/users/view")
     public String viewUsers(Model model) {
         model.addAttribute("users", usersService.getAllUsers().isEmpty() ? Collections.emptyList() : usersService.getAllUsers());
@@ -89,11 +92,18 @@ public class HTMLController {
         return "redirect:/";
     }
     @GetMapping("/home")
-    public String home() {
+    public String home(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication: " + authentication);
-        System.out.println("Principal: " + authentication.getPrincipal().getClass().getName());
-        System.out.println("Authorities: " + authentication.getAuthorities());
+        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
+            User user = (User) authentication.getPrincipal();
+            boolean isAdmin = authentication.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+            model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("username", user.getUsername());
+        } else {
+            model.addAttribute("isAdmin", false);
+        }
         return "home";
     }
+
 }
