@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <title>Главная</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
 <div class="top-bar">
     <div class="left-buttons">
-        <button class="bar-button">Кнопка 1</button>
-        <button class="bar-button">Кнопка 2</button>
-        <button class="bar-button admin-button" th:if="${isAdmin}">Администрирование</button>
+        <button class="bar-button" onclick="location.href='/journal'">Журнал</button>
+        <th:block th:if="${isTeacher}">
+            <button class="bar-button" onclick="location.href='/students/view'">Ученики</button>
+        </th:block>
+        <th:block th:if="${isAdmin}">
+            <button class="bar-button" onclick="location.href='/admin'">Администрирование</button>
+        </th:block>
+        <th:block th:if="${isStudent}">
+            <button class="bar-button" onclick="location.href='/settings'">Настройки</button>
+        </th:block>
     </div>
     <div class="right-button">
         <form method="post" action="/logout">
@@ -19,6 +25,5 @@
         </form>
     </div>
 </div>
-
 </body>
 </html>

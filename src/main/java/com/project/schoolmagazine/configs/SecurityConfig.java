@@ -1,7 +1,9 @@
-package com.project.schoolmagazine.config;
+package com.project.schoolmagazine.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,11 +24,23 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
     @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("""
+            ROLE_ADMIN > ROLE_TEACHER
+            ROLE_TEACHER > ROLE_STUDENT
+            ROLE_STUDENT > ROLE_USER
+        """);
+        return hierarchy;
+    }
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/register", "/css/styles.css").permitAll()
-                        .requestMatchers("/admin/**","students/**").hasRole("ADMIN")
+                        .requestMatchers("/", "/register", "/css/styles.css", "/static/favicon.ico").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/students/**").hasRole("TEACHER")
+                        .requestMatchers("/settings/**").hasRole("STUDENT")
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login

@@ -1,4 +1,4 @@
-package com.project.schoolmagazine.entity;
+package com.project.schoolmagazine.entities;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;

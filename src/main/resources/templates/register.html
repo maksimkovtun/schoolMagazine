@@ -14,6 +14,22 @@
         <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
         <input type="text" name="username" placeholder="Логин" required>
         <input type="password" name="password" placeholder="Пароль" required>
+        <div class="roleSwitch">
+            <div>
+                <label>
+                    <input type="radio" name="role" value="STUDENT">
+                    <span>Ученик</span>
+                </label>
+                <label>
+                    <input type="radio" name="role" value="TEACHER">
+                    <span>Учитель</span>
+                </label>
+                <label>
+                    <input type="radio" name="role" value="USER">
+                    <span>Гость</span>
+                </label>
+            </div>
+        </div>
         <button type="submit">Зарегистрироваться</button>
         <p>Уже есть учетная запись? <a href="/">Войти</a></p>
     </form>

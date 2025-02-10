@@ -1,7 +1,7 @@
-package com.project.schoolmagazine.service;
+package com.project.schoolmagazine.services;
 
-import com.project.schoolmagazine.entity.StudentsEntity;
-import com.project.schoolmagazine.repository.StudentsRepository;
+import com.project.schoolmagazine.entities.StudentsEntity;
+import com.project.schoolmagazine.repositories.StudentsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

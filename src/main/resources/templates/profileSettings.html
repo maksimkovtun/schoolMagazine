@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Авторизация</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body class="no-scroll-body">
+<div class="authContainer">
+  <h2>Вход в систему</h2>
+  <div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+  </div>
+  <form id="authForm" method="post" action="/settings/profile">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+    <input type="text" name="surname" placeholder="Фамилия" th:value="${student?.studentSurname}" required>
+    <input type="text" name="firstname" placeholder="Имя" th:value="${student?.studentName}" required>
+    <input type="text" name="patronymic" placeholder="Отчество" th:value="${student?.studentPatronymic}" required>
+    <input type="text" name="_class" placeholder="Класс" th:value="${(student?.classNumber ?: '') + (student?.classLetter ?: '')}" required>
+    <input type="text" name="studentMail" placeholder="Почта" th:value="${student?.studentMail}" required>
+    <button type="submit">Сохранить</button>
+    <a href="/settings">Назад</a>
+  </form>
+</div>
+</body>
+</html>
