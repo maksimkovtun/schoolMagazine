@@ -20,14 +20,15 @@
               .then(data => {
                 if (data.length > 0) {
                   resultsDiv.innerHTML = data.map(user => `
-                            <div class="user-item">
-                                <p><strong>${user.username}</strong></p>
-                                <p>Имя: ${user.username} ${user.username}</p>
-                                <p>Роль: ${user.userRole}</p>
-                                <button onclick="editUser(${user.userId})">Редактировать</button>
-                                <button onclick="deleteUser(${user.userId})">Удалить</button>
-                            </div>
-                        `).join('');
+          <div class="user-item">
+            <p>Логин: ${user.username}</p>
+            <p>Имя: ${user.profileSurname} ${user.profileName} ${user.profilePatronymic}</p>
+            <p>Почта: ${user.profileMail}</p>
+            <p>Роль: ${user.userRole}</p>
+            <button onclick="editUser(${user.userId})">Редактировать</button>
+            <button onclick="deleteUser(${user.userId})">Удалить</button>
+          </div>
+        `).join('');
                 } else {
                   resultsDiv.innerHTML = '<p>Пользователь не найден.</p>';
                 }
@@ -37,6 +38,7 @@
                 resultsDiv.innerHTML = '<p>Произошла ошибка при поиске.</p>';
               });
     }
+
 
     function editUser(userId) {
       window.location.href = `/admin/users/edit?userId=${userId}`;

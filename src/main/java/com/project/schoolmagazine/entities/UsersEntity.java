@@ -24,6 +24,7 @@ public class UsersEntity implements UserDetails {
     private String password;
 
     @Column(name = "role", nullable = false)
+
     private String userRole;
 
     public Integer getUserId() {

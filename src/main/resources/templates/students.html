@@ -18,12 +18,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="student : ${students}">
-        <td th:text="${student.studentId}"></td>
-        <td th:text="${student.studentSurname}"></td>
-        <td th:text="${student.studentName}"></td>
-        <td th:text="${student.studentPatronymic}"></td>
-        <td th:text="${student.classNumber} + ' ' + ${student.classLetter}"></td>
+    <tr th:each="profile : ${profiles}" th:if="${profile.user.role == 'STUDENT'}">
+    <td th:text="${profile.profileId}"></td>
+        <td th:text="${profile.profileSurname}"></td>
+        <td th:text="${profile.profileName}"></td>
+        <td th:text="${profile.profilePatronymic}"></td>
+        <td th:text="${profile.classNumber} + ' ' + ${profile.classLetter}"></td>
     </tr>
     </tbody>
 </table>

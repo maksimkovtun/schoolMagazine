@@ -4,9 +4,12 @@
   <title>Редактировать пользователя</title>
   <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
-<body>
+<body class="no-scroll-body">
 <div class="container">
   <h1>Редактировать пользователя</h1>
+  <div th:if="${updateUserError}" class="error">
+    <p th:text="${updateUserError}"></p>
+  </div>
   <form th:action="@{/admin/users/edit}" th:object="${user}" method="post">
     <input type="hidden" th:field="*{userId}" />
 
@@ -18,34 +21,6 @@
     <div>
       <label for="password">Пароль:</label>
       <input type="text" th:field="*{password}" id="password" required />
-    </div>
-    <div>
-      <label for="firstName">Имя:</label>
-      <input type="text" th:field="*{student.studentName}" id="firstName" required />
-    </div>
-    <div>
-      <label for="lastName">Фамилия:</label>
-      <input type="text" th:field="*{student.studentSurname}" id="lastName" required />
-    </div>
-    <div>
-      <label for="patronymic">Отчество:</label>
-      <input type="text" th:field="*{student.studentPatronymic}" id="patronymic" />
-    </div>
-    <div>
-      <label for="mail">Почта:</label>
-      <input type="email" th:field="*{student.studentMail}" id="mail" />
-    </div>
-
-    <div th:if="*{student != null}">
-      <h2>Данные ученика</h2>
-      <div>
-        <label for="classNumber">Класс:</label>
-        <input type="number" th:field="*{student.classNumber}" id="classNumber" min="1" max="11" required />
-      </div>
-      <div>
-        <label for="classLetter">Буква класса:</label>
-        <input type="text" th:field="*{student.classLetter}" id="classLetter" maxlength="1" required />
-      </div>
     </div>
 
     <div>
@@ -59,9 +34,51 @@
     </div>
 
     <div>
-      <button type="submit">Сохранить изменения</button>
+      <button type="submit">Сохранить пользователя</button>
     </div>
   </form>
+
+  <div th:if="${profile != null}">
+    <h2>Данные профиля</h2>
+    <form th:action="@{/admin/profiles/edit}" th:object="${profile}" method="post">
+      <input type="hidden" th:field="*{profileId}" />
+      <input type="hidden" th:field="*{user.userId}" />
+
+      <div>
+        <label for="lastName">Фамилия:</label>
+        <input type="text" th:field="*{profileSurname}" id="lastName" required />
+      </div>
+
+      <div>
+        <label for="firstName">Имя:</label>
+        <input type="text" th:field="*{profileName}" id="firstName" required />
+      </div>
+
+      <div>
+        <label for="patronymic">Отчество:</label>
+        <input type="text" th:field="*{profilePatronymic}" id="patronymic" />
+      </div>
+
+      <div>
+        <label for="mail">Почта:</label>
+        <input type="text" th:field="*{profileMail}" id="mail" />
+      </div>
+
+      <div>
+        <label for="classNumber">Класс:</label>
+        <input type="number" th:field="*{classNumber}" id="classNumber" maxlength="2" min="1" max="11" required />
+      </div>
+
+      <div>
+        <label for="classLetter">Буква класса:</label>
+        <input type="text" th:field="*{classLetter}" id="classLetter" maxlength="1" required />
+      </div>
+
+      <div>
+        <button type="submit">Сохранить профиль</button>
+      </div>
+    </form>
+  </div>
 </div>
 </body>
 </html>
