@@ -7,12 +7,11 @@
 <body class="no-scroll-body">
 <div class="container">
   <h1>Редактировать пользователя</h1>
-  <div th:if="${updateUserError}" class="error">
-    <p th:text="${updateUserError}"></p>
-  </div>
   <form th:action="@{/admin/users/edit}" th:object="${user}" method="post">
     <input type="hidden" th:field="*{userId}" />
-
+    <div th:if="${updateUserError}" class="error">
+      <p th:text="${updateUserError}"></p>
+    </div>
     <div>
       <label for="username">Логин:</label>
       <input type="text" th:field="*{username}" id="username" required />
@@ -40,6 +39,9 @@
 
   <div th:if="${profile != null}">
     <h2>Данные профиля</h2>
+    <div th:if="${updateProfileError}" class="error">
+      <p th:text="${updateProfileError}"></p>
+    </div>
     <form th:action="@{/admin/profiles/edit}" th:object="${profile}" method="post">
       <input type="hidden" th:field="*{profileId}" />
       <input type="hidden" th:field="*{user.userId}" />

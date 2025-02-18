@@ -1,10 +1,12 @@
 package com.project.schoolmagazine.controllers;
 
 import com.project.schoolmagazine.entities.ProfilesEntity;
+import com.project.schoolmagazine.entities.SubjectsEntity;
 import com.project.schoolmagazine.entities.UsersEntity;
 import com.project.schoolmagazine.repositories.ProfilesRepository;
 import com.project.schoolmagazine.repositories.UsersRepository;
 import com.project.schoolmagazine.services.ProfilesService;
+import com.project.schoolmagazine.services.SubjectsService;
 import com.project.schoolmagazine.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.userdetails.User;
 
+import javax.security.auth.Subject;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -26,33 +32,39 @@ public class HTMLController {
     private final UsersRepository usersRepository;
     private final UsersService usersService;
     private final PasswordEncoder passwordEncoder;
+    private final SubjectsService subjectsService;
     @Autowired
-    public HTMLController(ProfilesService profilesService, UsersRepository usersRepository, PasswordEncoder passwordEncoder, ProfilesRepository profilesRepository, UsersService usersService, PasswordEncoder passwordEncoder1) {
+    public HTMLController(ProfilesService profilesService, UsersRepository usersRepository, PasswordEncoder passwordEncoder, ProfilesRepository profilesRepository, UsersService usersService, SubjectsService subjectsService) {
         this.profilesService = profilesService;
         this.usersRepository = usersRepository;
         this.profilesRepository = profilesRepository;
         this.usersService = usersService;
-        this.passwordEncoder = passwordEncoder1;
+        this.passwordEncoder = passwordEncoder;
+        this.subjectsService = subjectsService;
     }
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @GetMapping("/students/view")
-    public String viewStudents(Model model) {
-        model.addAttribute("students", profilesService.getAllProfiles());
+    @GetMapping("/profiles/view")
+    public String viewProfiles(Model model) {
+        model.addAttribute("profiles", profilesService.getAllProfiles());
         return "students";
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @GetMapping("/admin")
-    public String adminPanel() {
+    public String adminPanel(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Boolean> roles = getUserRoles(authentication);
+        model.addAllAttributes(roles);
         return "adminPanel";
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @GetMapping("/admin/users/view")
     public String viewUsers(Model model) {
         model.addAttribute("users", usersService.getAllUsers().isEmpty() ? Collections.emptyList() : usersService.getAllUsers());
         return "users";
     }
 
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @GetMapping("/admin/users/search")
     @ResponseBody
     public List<Map<String, Object>> searchUsers(@RequestParam String email) {
@@ -91,7 +103,7 @@ public class HTMLController {
         usersService.deleteUser(id);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @GetMapping("/admin/users/edit")
     public String showEditUserForm(@RequestParam("userId") Integer userId, Model model) {
         UsersEntity user = usersRepository.findById(userId)
@@ -101,6 +113,7 @@ public class HTMLController {
                 .orElse(null);
 
         model.addAttribute("user", user);
+        assert profile != null;
         model.addAttribute("profile", profile);
 
         return "editUser";
@@ -110,7 +123,6 @@ public class HTMLController {
     @PostMapping("/admin/users/edit")
     public String editUser(@ModelAttribute UsersEntity user, Model model) {
         UsersEntity existingUser = usersRepository.findById(user.getUserId()).orElseThrow();
-
         if (!existingUser.getPassword().equals(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
@@ -119,7 +131,7 @@ public class HTMLController {
         return "redirect:/admin/users/edit?userId=" + user.getUserId();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @PostMapping("/admin/profiles/edit")
     public String editProfile(@ModelAttribute ProfilesEntity profile,
                               @RequestParam(required = false) String profileSurname,
@@ -129,42 +141,64 @@ public class HTMLController {
                               @RequestParam(required = false) Integer classNumber,
                               @RequestParam(required = false) String classLetter,
                               Model model) {
-
-        System.out.println("Получено classNumber: " + classNumber);
-        System.out.println("Получено classLetter: " + classLetter);
-
         ProfilesEntity existingProfile = profilesRepository.findById(profile.getProfileId())
                 .orElse(new ProfilesEntity());
-
         Optional<UsersEntity> user = usersRepository.findByUserId(existingProfile.getUser().getUserId());
-
         if (user.isEmpty()) {
             model.addAttribute("updateProfileError", "Пользователь не найден.");
             return "redirect:/admin/users";
         }
-
         existingProfile.setProfileSurname(profileSurname);
         existingProfile.setProfileName(profileName);
         existingProfile.setProfilePatronymic(profilePatronymic);
         existingProfile.setProfileMail(profileMail);
-
         if (classNumber != null && (classNumber < 1 || classNumber > 11)) {
             model.addAttribute("updateProfileError", "Ошибка ввода класса: используйте число от 1 до 11.");
             return "redirect:/admin/users/edit?userId=" + user.get().getUserId();
         }
-
         if (classLetter != null && !classLetter.matches("^[А-Яа-я]$")) {
             model.addAttribute("updateProfileError", "Ошибка ввода буквы класса: используйте одну русскую букву.");
             return "redirect:/admin/users/edit?userId=" + user.get().getUserId();
         }
-
         existingProfile.setClassNumber(classNumber);
         existingProfile.setClassLetter(classLetter != null ? classLetter.toUpperCase() : null);
         profilesRepository.save(existingProfile);
-
         return "redirect:/admin/users/edit?userId=" + user.get().getUserId();
     }
 
+    @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
+    @GetMapping("/admin/subjects/view")
+    public String viewSubjects(Model model) {
+        model.addAttribute("subjects", subjectsService.getAllSubjects());
+        return "subjects";
+    }
+
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @GetMapping("/journal")
+    public String journal(Model model) {
+        List<String> subjects = subjectsService.getSubjectsList();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Boolean> roles = getUserRoles(authentication);
+        model.addAllAttributes(roles);
+        model.addAttribute("subjects", subjects);
+        return "journal";
+    }
+
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @PostMapping("/journal")
+    public String getJournal(@RequestParam String subject, @RequestParam String quarter) {
+        String encodedSubject = URLEncoder.encode(subject, StandardCharsets.UTF_8);
+        return "redirect:/journal/" + encodedSubject + "/" + quarter;
+    }
+
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    @GetMapping("/journal/{subject}/{quarter}")
+    public String journalDetail(@PathVariable String subject, @PathVariable String quarter, Model model) {
+        String decodedSubject = URLDecoder.decode(subject, StandardCharsets.UTF_8);
+        model.addAttribute("subject", decodedSubject);
+        model.addAttribute("quarter", quarter);
+        return "journalDetail";
+    }
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping("/settings")
@@ -318,6 +352,7 @@ public class HTMLController {
     private Map<String, Boolean> getUserRoles(Authentication authentication) {
         Map<String, Boolean> roles = new HashMap<>();
         roles.put("isAdmin", false);
+        roles.put("isHTeacher", false);
         roles.put("isTeacher", false);
         roles.put("isStudent", false);
         roles.put("isUser", false);
@@ -327,6 +362,13 @@ public class HTMLController {
                 switch (role) {
                     case "ROLE_ADMIN" -> {
                         roles.put("isAdmin", true);
+                        roles.put("isHTeacher", true);
+                        roles.put("isTeacher", true);
+                        roles.put("isStudent", true);
+                        roles.put("isUser", true);
+                    }
+                    case "ROLE_HEAD_TEACHER" -> {
+                        roles.put("isHTeacher", true);
                         roles.put("isTeacher", true);
                         roles.put("isStudent", true);
                         roles.put("isUser", true);

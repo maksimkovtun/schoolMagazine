@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Список предметов</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+  <h1>Список предметов</h1>
+  <button onclick="showAddSubjectForm()">Добавить предмет</button>
+  <div id="addSubjectForm" style="display: none; margin-top: 10px;">
+    <form th:action="@{/subjects/add}" method="post">
+      <input type="text" name="subject" placeholder="Название предмета" required>
+      <button type="submit">Добавить</button>
+    </form>
+  </div>
+  <table>
+    <thead>
+    <tr>
+      <th onclick="sortTable(0)">Номер</th>
+      <th>Предмет</th>
+      <th>Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="subject : ${subjects}">
+      <td th:text="${subject.subjectId}"></td>
+      <td th:text="${subject.subject}"></td>
+      <td>
+        <form th:action="@{/subjects/delete/{id}(id=${subject.subjectId})}" method="post" style="display: inline;">
+          <button type="submit">Удалить</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<script>
+  function showAddSubjectForm() {
+    const form = document.getElementById('addSubjectForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  }
+  function sortTable(columnIndex) {
+    const table = document.querySelector("table tbody");
+    const rows = Array.from(table.rows);
+    const isAsc = table.getAttribute("data-sort-order") === "asc";
+    rows.sort((rowA, rowB) => {
+      const cellA = rowA.cells[columnIndex].textContent.trim();
+      const cellB = rowB.cells[columnIndex].textContent.trim();
+      const compare = cellA - cellB; // для числовой сортировки по id
+      return isAsc ? compare : -compare;
+    });
+    rows.forEach(row => table.appendChild(row)); // ре-рендер строк в новом порядке
+    table.setAttribute("data-sort-order", isAsc ? "desc" : "asc");
+  }
+</script>
+</body>
+</html>

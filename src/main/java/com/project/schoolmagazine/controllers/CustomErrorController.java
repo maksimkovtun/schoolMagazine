@@ -10,7 +10,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class CustomErrorController implements ErrorController {
 
     @GetMapping
-    public String handleError() {
-        return "error";
-    }
+    public String handleError() {return "error";}
 }

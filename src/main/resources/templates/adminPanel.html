@@ -7,8 +7,12 @@
 <body class="no-scroll-body">
 <div class="authContainer">
   <h2>Админ панель</h2>
-  <button onclick="location.href='/admin/users/view'">Пользователи</button>
-  <button onclick="location.href='/admin/teachers/view'">Учителя</button>
+  <th:block th:if="${isAdmin}">
+    <button onclick="location.href='/admin/users/view'">Пользователи</button>
+  </th:block>
+  <th:block th:if="${isHTeacher}">
+    <button onclick="location.href='/admin/subjects/view'">Предметы</button>
+  </th:block>
   <a href="/home">Назад</a>
 </div>
 </body>

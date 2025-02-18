@@ -7,8 +7,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "profiles", schema = "public", catalog = "schoolMagazine")
 public class ProfilesEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "profile_id")
     private Integer profileId;
     @Basic
