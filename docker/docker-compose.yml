@@ -20,6 +20,6 @@ services:
       POSTGRES_PASSWORD: 12345
     volumes:
       - pgdata:/var/lib/postgresql/data
-
+      - ./docker/initdb/schoolMagazine.sql:/docker-entrypoint-initdb.d/schoolMagazine.sql:ro
 volumes:
   pgdata:
