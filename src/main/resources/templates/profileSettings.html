@@ -6,7 +6,7 @@
 </head>
 <body class="no-scroll-body">
 <div class="authContainer">
-  <h2>Вход в систему</h2>
+    <h2>Настройка профиля</h2>
   <div th:if="${error}" class="error">
     <p th:text="${error}"></p>
   </div>
@@ -16,7 +16,7 @@
     <input type="text" name="firstname" placeholder="Имя" th:value="${profile?.profileName}" required>
     <input type="text" name="patronymic" placeholder="Отчество" th:value="${profile?.profilePatronymic}" required>
     <input type="text" name="_class" placeholder="Класс" th:value="${(profile?.classNumber ?: '') + (profile?.classLetter ?: '')}" required>
-    <input type="text" name="studentMail" placeholder="Почта" th:value="${profile?.profileMail}" required>
+    <input type="text" name="profileMail" placeholder="Почта" th:value="${profile?.profileMail}" required>
     <button type="submit">Сохранить</button>
     <a href="/settings">Назад</a>
   </form>

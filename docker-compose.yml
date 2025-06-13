@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   application:
     build: .
@@ -10,16 +8,16 @@ services:
       SPRING_DB_USERNAME: postgres
       SPRING_DB_PASSWORD: 12345
     depends_on:
-      - db
+      - database
 
   database:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_DB: schoolMagazine
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./docker/initdb/schoolMagazine.sql:/docker-entrypoint-initdb.d/schoolMagazine.sql:ro
+      - ./initdb/schoolMagazine.sql:/docker-entrypoint-initdb.d/schoolMagazine.sql:ro
 volumes:
   pgdata:
