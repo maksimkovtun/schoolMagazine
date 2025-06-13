@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  application:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DB_URL: jdbc:postgresql://database:5432/schoolMagazine
+      SPRING_DB_USERNAME: postgres
+      SPRING_DB_PASSWORD: 12345
+    depends_on:
+      - db
+
+  database:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: schoolMagazine
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
