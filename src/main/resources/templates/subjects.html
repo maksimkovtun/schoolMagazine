@@ -8,6 +8,7 @@
 <div class="container">
   <h1>Список предметов</h1>
   <button onclick="showAddSubjectForm()">Добавить предмет</button>
+  <a href="/admin">Назад</a>
   <div id="addSubjectForm" style="display: none; margin-top: 10px;">
     <form th:action="@{/subjects/add}" method="post">
       <input type="text" name="subject" placeholder="Название предмета" required>

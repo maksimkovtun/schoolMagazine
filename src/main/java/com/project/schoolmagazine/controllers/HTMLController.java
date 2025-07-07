@@ -1,7 +1,6 @@
 package com.project.schoolmagazine.controllers;
 
 import com.project.schoolmagazine.entities.ProfilesEntity;
-import com.project.schoolmagazine.entities.SubjectsEntity;
 import com.project.schoolmagazine.entities.UsersEntity;
 import com.project.schoolmagazine.repositories.ProfilesRepository;
 import com.project.schoolmagazine.repositories.UsersRepository;
@@ -11,15 +10,11 @@ import com.project.schoolmagazine.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.userdetails.User;
-
-import javax.security.auth.Subject;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -33,27 +28,31 @@ public class HTMLController {
     private final UsersService usersService;
     private final PasswordEncoder passwordEncoder;
     private final SubjectsService subjectsService;
+    private final UserContextHelper userContextHelper;
+
     @Autowired
-    public HTMLController(ProfilesService profilesService, UsersRepository usersRepository, PasswordEncoder passwordEncoder, ProfilesRepository profilesRepository, UsersService usersService, SubjectsService subjectsService) {
+    public HTMLController(ProfilesService profilesService, UsersRepository usersRepository, PasswordEncoder passwordEncoder, ProfilesRepository profilesRepository, UsersService usersService, SubjectsService subjectsService, UserContextHelper userContextHelper) {
         this.profilesService = profilesService;
         this.usersRepository = usersRepository;
         this.profilesRepository = profilesRepository;
         this.usersService = usersService;
         this.passwordEncoder = passwordEncoder;
         this.subjectsService = subjectsService;
+        this.userContextHelper = userContextHelper;
     }
+
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @GetMapping("/profiles/view")
-    public String viewProfiles(Model model) {
+    @GetMapping("/students/view")
+    public String viewStudents(Model model) {
         model.addAttribute("profiles", profilesService.getAllProfiles());
+        model.addAllAttributes(userContextHelper.getUserRoles());
         return "students";
     }
+
     @PreAuthorize("hasRole('ROLE_HEAD_TEACHER')")
     @GetMapping("/admin")
     public String adminPanel(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<String, Boolean> roles = getUserRoles(authentication);
-        model.addAllAttributes(roles);
+        model.addAllAttributes(userContextHelper.getUserRoles());
         return "adminPanel";
     }
 
@@ -177,26 +176,31 @@ public class HTMLController {
     @GetMapping("/journal")
     public String journal(Model model) {
         List<String> subjects = subjectsService.getSubjectsList();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<String, Boolean> roles = getUserRoles(authentication);
-        model.addAllAttributes(roles);
+        List<String> _classes;
+        if (Boolean.TRUE.equals(userContextHelper.getUserRoles().get("isStudent"))) {
+            _classes = profilesService.getClassByUserName(userContextHelper.getUserName());
+        } else {
+            _classes = profilesService.getClassesList();
+        }
+        model.addAttribute("_classes", _classes);
+        model.addAllAttributes(userContextHelper.getUserRoles());
         model.addAttribute("subjects", subjects);
+
         return "journal";
     }
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @PostMapping("/journal")
-    public String getJournal(@RequestParam String subject, @RequestParam String quarter) {
-        String encodedSubject = URLEncoder.encode(subject, StandardCharsets.UTF_8);
-        return "redirect:/journal/" + encodedSubject + "/" + quarter;
+    public String getJournal(@RequestParam String subject, @RequestParam String quarter, @RequestParam String _class) {
+        return "redirect:/journal/" + URLEncoder.encode(subject, StandardCharsets.UTF_8) + "/" + quarter + "/" + URLEncoder.encode(_class, StandardCharsets.UTF_8);
     }
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    @GetMapping("/journal/{subject}/{quarter}")
-    public String journalDetail(@PathVariable String subject, @PathVariable String quarter, Model model) {
-        String decodedSubject = URLDecoder.decode(subject, StandardCharsets.UTF_8);
-        model.addAttribute("subject", decodedSubject);
-        model.addAttribute("quarter", quarter);
+    @GetMapping("/journal/{subject}/{quarter}/{_class}")
+    public String journalDetail(@PathVariable String subject, @PathVariable String quarter, @PathVariable String _class, Model model) {
+//        model.addAttribute("subject", URLDecoder.decode(subject, StandardCharsets.UTF_8));
+//        model.addAttribute("quarter", quarter);
+//        model.addAttribute("subject", URLDecoder.decode(_class, StandardCharsets.UTF_8));
         return "journalDetail";
     }
 
@@ -211,9 +215,8 @@ public class HTMLController {
     public String updateProfile(@RequestParam String firstname, @RequestParam String surname,
                                 @RequestParam String patronymic, @RequestParam String _class,
                                 @RequestParam String profileMail, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        Optional<UsersEntity> userEntityOpt = usersRepository.findByUsername(user.getUsername());
+
+        Optional<UsersEntity> userEntityOpt = usersRepository.findByUsername(userContextHelper.getUserName());
         if (userEntityOpt.isEmpty()) {
             model.addAttribute("error", "Пользователь не найден");
             return "profileSettings";
@@ -271,10 +274,8 @@ public class HTMLController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping("/settings/profile")
     public String showProfileSettings(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
 
-        Optional<UsersEntity> userEntityOpt = usersRepository.findByUsername(user.getUsername());
+        Optional<UsersEntity> userEntityOpt = usersRepository.findByUsername(userContextHelper.getUserName());
         if (userEntityOpt.isEmpty()) {
             model.addAttribute("error", "Пользователь не найден");
             return "profileSettings";
@@ -294,10 +295,8 @@ public class HTMLController {
         if (error != null) {
             model.addAttribute("loginError", "Неверный логин или пароль.");
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)){
-                User user = (User) authentication.getPrincipal();
-                model.addAttribute("username", user.getUsername());
+        if (userContextHelper.isAuth()){
+                model.addAttribute("username", userContextHelper.getUserName());
             String referer = request.getHeader("Referer");
             if (referer != null && !referer.contains("/")) {
                 return "redirect:" + referer;
@@ -306,10 +305,12 @@ public class HTMLController {
         }
         return "auth";
     }
+
     @GetMapping("/register")
     public String showRegisterPage() {
         return "register";
     }
+
     @PostMapping("/register")
     public String register(@RequestParam String username, @RequestParam String password, @RequestParam String role, Model model) {
         if (usersRepository.findByUsername(username).isPresent()) {
@@ -326,6 +327,7 @@ public class HTMLController {
         usersService.saveUser(user);
         return "redirect:/?registered=true";
     }
+
     @GetMapping("/logout")
     public String handleLogout(HttpServletRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
@@ -337,55 +339,11 @@ public class HTMLController {
         }
         return "redirect:/";
     }
+
     @GetMapping("/home")
     public String home(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Map<String, Boolean> roles = getUserRoles(authentication);
-        model.addAllAttributes(roles);
-
-        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
-            User user = (User) authentication.getPrincipal();
-            model.addAttribute("username", user.getUsername());
-        }
+        model.addAllAttributes(userContextHelper.getUserRoles());
+        model.addAttribute("username", userContextHelper.getUserName());
         return "home";
-    }
-    private Map<String, Boolean> getUserRoles(Authentication authentication) {
-        Map<String, Boolean> roles = new HashMap<>();
-        roles.put("isAdmin", false);
-        roles.put("isHTeacher", false);
-        roles.put("isTeacher", false);
-        roles.put("isStudent", false);
-        roles.put("isUser", false);
-        if (authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String)) {
-            for (var auth : authentication.getAuthorities()) {
-                String role = auth.getAuthority();
-                switch (role) {
-                    case "ROLE_ADMIN" -> {
-                        roles.put("isAdmin", true);
-                        roles.put("isHTeacher", true);
-                        roles.put("isTeacher", true);
-                        roles.put("isStudent", true);
-                        roles.put("isUser", true);
-                    }
-                    case "ROLE_HEAD_TEACHER" -> {
-                        roles.put("isHTeacher", true);
-                        roles.put("isTeacher", true);
-                        roles.put("isStudent", true);
-                        roles.put("isUser", true);
-                    }
-                    case "ROLE_TEACHER" -> {
-                        roles.put("isTeacher", true);
-                        roles.put("isStudent", true);
-                        roles.put("isUser", true);
-                    }
-                    case "ROLE_STUDENT" -> {
-                        roles.put("isStudent", true);
-                        roles.put("isUser", true);
-                    }
-                    case "ROLE_USER" -> roles.put("isUser", true);
-                }
-            }
-        }
-        return roles;
     }
 }

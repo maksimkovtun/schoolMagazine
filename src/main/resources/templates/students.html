@@ -7,6 +7,7 @@
 <body class="no-scroll-body">
 <div class="container">
 <h1>Список учеников</h1>
+    <a href="/home">Назад</a>
 <table>
     <thead>
     <tr>
@@ -15,15 +16,17 @@
         <th>Имя</th>
         <th>Отчество</th>
         <th>Класс</th>
+        <th>Почта</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="profile : ${profiles}" th:if="${profile.user.role == 'STUDENT'}">
+    <tr th:each="profile : ${profiles}" th:if="${profile.user.userRole == 'STUDENT'}">
     <td th:text="${profile.profileId}"></td>
         <td th:text="${profile.profileSurname}"></td>
         <td th:text="${profile.profileName}"></td>
         <td th:text="${profile.profilePatronymic}"></td>
         <td th:text="${profile.classNumber} + ' ' + ${profile.classLetter}"></td>
+        <td th:text="${profile.profileMail}"></td>
     </tr>
     </tbody>
 </table>

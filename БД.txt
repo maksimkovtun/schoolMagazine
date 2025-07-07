@@ -1,1 +1,16 @@
 create table students(student_id serial primary key, student_name text not null, student_surname text not null, student_patronymic text, class_number integer not null, class_letter text not null)
+
+CREATE TABLE scores (
+    score_id     SERIAL PRIMARY KEY,
+    teacher_id   INT NOT NULL,
+    student_id   INT NOT NULL,
+    subject_id   INT NOT NULL,
+    quarter   INT NOT NULL,
+    score_date   DATE NOT NULL DEFAULT CURRENT_DATE,
+    score_value  INT NOT NULL,
+    CONSTRAINT fk_teacher FOREIGN KEY (teacher_id) REFERENCES users(user_id),
+    CONSTRAINT fk_student FOREIGN KEY (student_id) REFERENCES users(user_id),
+    CONSTRAINT fk_subject FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+);
+
+INSERT INTO scores (teacher_id, student_id, subject_id, quarter, score_value) VALUES (6, 7, 1, 1, 5);
