@@ -13,6 +13,9 @@
   <th:block th:if="${isHTeacher}">
     <button onclick="location.href='/admin/subjects/view'">Предметы</button>
   </th:block>
+  <th:block th:if="${isHTeacher}">
+    <button onclick="location.href='/admin/students/view'">Ученики</button>
+  </th:block>
   <a href="/home">Назад</a>
 </div>
 </body>

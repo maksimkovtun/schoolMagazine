@@ -12,8 +12,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/scores")
 public class ScoresController {
 
+    private final ScoresService scoresService;
+
     @Autowired
-    private ScoresService scoresService;
+    public ScoresController(ScoresService scoresService) {
+        this.scoresService = scoresService;
+    }
+
     @GetMapping
     public String getSubjects(Model model) {
         model.addAttribute("scores", scoresService.getAllScores());

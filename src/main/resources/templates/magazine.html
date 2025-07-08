@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Журналы</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body class="no-scroll-body">
+<div class="authContainer">
+    <h1>Выбор журнала</h1>
+    <form th:action="@{/magazine}" method="post">
+    <th:block th:if="${isStudent}">
+        <div>
+        <label for="subject">Предмет:</label>
+        <select id="subject" name="subject">
+            <option th:each="subject : ${subjects}" th:value="${subject}" th:text="${subject}"></option>
+        </select>
+        </div>
+        <div>
+        <label for="quarter">Четверть:</label>
+        <input type="number" name="quarter" id="quarter" maxlength="2" min="1" max="4" required/>
+        </div>
+        <input type="hidden" name="_class" th:value="${_classes[0]}"/>
+    </th:block>
+        <th:block th:if="${isTeacher}">
+            <div>
+                <label for="_class">Класс:</label>
+                <select id="_class" name="_class">
+                    <option th:each="_class : ${_classes}" th:value="${_class}" th:text="${_class}"></option>
+                </select>
+            </div>
+        </th:block>
+        <div>
+            <button type="submit">Перейти</button>
+        </div>
+    </form>
+<div>
+    <a href="/home">Назад</a>
+</div>
+</div>
+</body>
+</html>
+

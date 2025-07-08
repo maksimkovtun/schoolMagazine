@@ -92,15 +92,18 @@ public class ProfilesEntity {
     public int hashCode() {
         return Objects.hash(profileId, profileName, profileSurname, profilePatronymic, classNumber, classLetter);
     }
+
     public ProfilesEntity() {}
-    public ProfilesEntity(String profileName, String profileSurname, String profilePatronymic, Integer classNumber, String classLetter, String profileMail) {
-        this.profileName = profileName;
-        this.profileSurname = profileSurname;
-        this.profilePatronymic = profilePatronymic;
+
+    public void updateFields(String surname, String name, String patronymic, String mail, Integer classNumber, String classLetter) {
+        this.profileSurname = surname != null ? surname.trim() : null;
+        this.profileName = name != null ? name.trim() : null;
+        this.profilePatronymic = patronymic != null ? patronymic.trim() : null;
+        this.profileMail = mail != null ? mail.trim() : null;
         this.classNumber = classNumber;
-        this.classLetter = classLetter;
-        this.profileMail = profileMail;
+        this.classLetter = classLetter != null ? classLetter.trim().toUpperCase() : null;
     }
+
     @Override
     public String toString() {
         return "profilesEntity{" +
